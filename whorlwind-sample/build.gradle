@@ -1,0 +1,45 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:1.5.0'
+    classpath 'me.tatarka:gradle-retrolambda:3.2.4'
+    classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+  }
+
+  // The version the android plugin uses doesn't support lambdas. We're bringing a different one.
+  configurations.classpath.exclude group: 'com.android.tools.external.lombok'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+
+dependencies {
+  compile project(':whorlwind')
+
+  compile 'io.reactivex:rxjava:1.1.1'
+  compile 'io.reactivex:rxandroid:1.1.0'
+  compile 'com.jakewharton:butterknife:7.0.1'
+  compile 'com.jakewharton.rxbinding:rxbinding:0.1.0'
+  compile 'com.mattprecious.swirl:swirl:1.0.0'
+}
+
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0.2"
+
+  defaultConfig {
+    versionName VERSION_NAME
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  lintOptions {
+    abortOnError false
+  }
+}

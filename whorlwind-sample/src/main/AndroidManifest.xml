@@ -1,0 +1,33 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="1"
+    package="com.squareup.whorlwind.sample"
+    >
+
+  <uses-sdk
+      android:minSdkVersion="23"
+      android:targetSdkVersion="23"
+      />
+
+  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+
+  <application
+      android:allowBackup="true"
+      android:icon="@mipmap/ic_launcher"
+      android:label="@string/application_name"
+      android:theme="@style/Theme.Whorlwind"
+      >
+    <activity
+        android:label="@string/launcher_name"
+        android:name=".SampleActivity"
+        android:screenOrientation="portrait"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+  </application>
+
+</manifest>

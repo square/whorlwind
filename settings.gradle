@@ -1,0 +1,4 @@
+rootProject.name = 'whorlwind-parent'
+
+include ':whorlwind'
+include ':whorlwind-sample'

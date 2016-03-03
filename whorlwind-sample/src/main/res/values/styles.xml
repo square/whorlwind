@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="None">
+  </style>
+
+  <style name="Theme.Whorlwind" parent="android:style/Theme.Material.Light">
+    <item name="swirl_ridgeColor">?android:attr/textColorSecondary</item>
+    <item name="swirl_errorColor">?android:attr/colorAccent</item>
+  </style>
+</resources>

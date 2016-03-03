@@ -1,0 +1,37 @@
+buildscript {
+  dependencies {
+    classpath 'com.android.tools.build:gradle:1.5.0'
+  }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+  compileSdkVersion 23
+  buildToolsVersion '23.0.2'
+
+  defaultConfig {
+    versionName VERSION_NAME
+
+    testInstrumentationRunner 'org.robolectric.RobolectricTestRunner'
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
+}
+
+dependencies {
+  compile 'com.android.support:support-v4:23.2.0'
+  compile 'com.squareup.okio:okio:1.6.0'
+  compile 'io.reactivex:rxjava:1.1.1'
+
+  // Test dependencies.
+  testCompile 'junit:junit:4.12'
+  testCompile 'com.google.truth:truth:0.28'
+  testCompile 'org.mockito:mockito-core:1.10.19'
+  testCompile 'org.robolectric:robolectric:3.0'
+}
+
+apply from: 'gradle-mvn-push.gradle'
