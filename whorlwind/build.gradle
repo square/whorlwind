@@ -39,4 +39,4 @@ dependencies {
   testCompile 'org.robolectric:robolectric:3.0'
 }
 
-apply from: 'gradle-mvn-push.gradle'
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
