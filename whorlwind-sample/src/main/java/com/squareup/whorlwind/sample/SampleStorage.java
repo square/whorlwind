@@ -2,7 +2,6 @@ package com.squareup.whorlwind.sample;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 import com.squareup.whorlwind.Storage;
 import java.util.Collections;
@@ -35,7 +34,7 @@ final class SampleStorage implements Storage {
     emit();
   }
 
-  @Override public void put(@NonNull String name, @Nullable ByteString value) {
+  @Override public void put(@NonNull String name, @NonNull ByteString value) {
     storage.put(name, value);
     emit();
   }

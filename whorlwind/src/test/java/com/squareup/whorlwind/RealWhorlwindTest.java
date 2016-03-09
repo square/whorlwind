@@ -5,7 +5,6 @@ import android.content.ContextWrapper;
 import android.hardware.fingerprint.FingerprintManager;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -143,7 +142,7 @@ public final class RealWhorlwindTest {
       storage.remove(name);
     }
 
-    @Override public void put(@NonNull String name, @Nullable ByteString value) {
+    @Override public void put(@NonNull String name, @NonNull ByteString value) {
       storage.put(name, value);
     }
 
