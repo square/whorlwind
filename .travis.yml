@@ -1,9 +1,5 @@
 language: android
 
-jdk:
- - oraclejdk7
- - oraclejdk8
-
 android:
   components:
     - platform-tools
@@ -12,8 +8,16 @@ android:
     - build-tools-23.0.2
     - extra-android-m2repository
 
-script:
-  - ./gradlew clean check
+jdk:
+  - oraclejdk8
+
+after_success:
+  - .buildscript/deploy_snapshot.sh
+
+env:
+  global:
+    - secure: "TODO"
+    - secure: "TODO"
 
 branches:
   except:
