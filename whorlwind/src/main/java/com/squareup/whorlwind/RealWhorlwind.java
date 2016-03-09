@@ -168,7 +168,8 @@ final class RealWhorlwind extends Whorlwind {
     // In contradiction to the documentation, the public key returned from the key store is only
     // unlocked after the user has authenticated with their fingerprint. This is unnecessary
     // (and broken) for encryption using asynchronous keys, so we work around this by re-creating
-    // our own copy of the key.
+    // our own copy of the key. See known issues at
+    // http://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.html
     KeySpec spec = new X509EncodedKeySpec(publicKey.getEncoded());
     return keyFactory.generatePublic(spec);
   }
