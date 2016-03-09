@@ -88,11 +88,6 @@ if (whorlwind.canStoreSecurely()) {
 A sample application is provided with a more comprehensive example.
 
 
-Permissions
------------
-
-`USE_FINGERPRINT` permission is required to access the fingerprint reader.
-
 
 Download
 --------

@@ -1,15 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="1"
     package="com.squareup.whorlwind.sample"
     >
-
-  <uses-sdk
-      android:minSdkVersion="23"
-      android:targetSdkVersion="23"
-      />
-
-  <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
-
   <application
       android:allowBackup="true"
       android:icon="@mipmap/ic_launcher"
@@ -29,5 +20,4 @@
       </intent-filter>
     </activity>
   </application>
-
 </manifest>

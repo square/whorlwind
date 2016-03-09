@@ -11,9 +11,8 @@ android {
   buildToolsVersion '23.0.2'
 
   defaultConfig {
+    minSdkVersion 15
     versionName VERSION_NAME
-
-    testInstrumentationRunner 'org.robolectric.RobolectricTestRunner'
   }
 
   compileOptions {
