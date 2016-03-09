@@ -17,14 +17,13 @@ package com.squareup.whorlwind;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import java.util.Set;
 import okio.ByteString;
 
 public interface Storage {
   void clear();
   void remove(@NonNull String name);
-  void put(@NonNull String name, @Nullable ByteString value);
+  void put(@NonNull String name, @NonNull ByteString value);
   @CheckResult ByteString get(@NonNull String name);
   @CheckResult Set<String> names();
 }

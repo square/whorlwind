@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -40,7 +39,7 @@ public final class SharedPreferencesStorage implements Storage {
     prefs.edit().remove(name).apply();
   }
 
-  @Override public void put(@NonNull String name, @Nullable ByteString value) {
+  @Override public void put(@NonNull String name, @NonNull ByteString value) {
     prefs.edit().putString(name, value.base64()).apply();
   }
 
