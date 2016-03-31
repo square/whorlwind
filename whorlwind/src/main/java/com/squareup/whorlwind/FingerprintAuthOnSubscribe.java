@@ -113,7 +113,7 @@ import rx.subscriptions.Subscriptions;
     }));
 
     if (subscriber.isUnsubscribed()) {
-      readerScanning.compareAndSet(true, false);
+      readerScanning.set(false);
       return;
     }
 
