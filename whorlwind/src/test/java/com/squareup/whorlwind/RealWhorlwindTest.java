@@ -3,17 +3,27 @@ package com.squareup.whorlwind;
 import android.annotation.SuppressLint;
 import android.content.ContextWrapper;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.CancellationSignal;
+import android.os.Handler;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+
+import java.io.IOException;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import okio.ByteString;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -26,9 +36,14 @@ import rx.functions.Action1;
 
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +144,29 @@ public final class RealWhorlwindTest {
     }
 
     verifyZeroInteractions(storage);
+  }
+
+  @Ignore
+  @Test public void immediateUnsubscribeShouldntCallAuthenticate() throws UnrecoverableKeyException,
+          NoSuchAlgorithmException, KeyStoreException, IOException {
+    Key key = mock(Key.class);
+    shadowContext.grantPermissions(USE_FINGERPRINT);
+    when(fingerprintManager.isHardwareDetected()).thenReturn(true);
+    when(fingerprintManager.hasEnrolledFingerprints()).thenReturn(true);
+    when(keyStore.getKey("test", null)).thenReturn(key);
+
+    Observable<ReadResult> read = whorlwind.read("test").take(1);
+
+    ReadResult readResult = read.toBlocking().single();
+    assertEquals(ReadResult.ReadState.NEEDS_AUTH, readResult.readState);
+
+    verify(fingerprintManager, never()).authenticate(
+            any(FingerprintManager.CryptoObject.class),
+            any(CancellationSignal.class),
+            anyInt(),
+            any(FingerprintManager.AuthenticationCallback.class),
+            any(Handler.class)
+    );
   }
 
   private static class TestStorage implements Storage {
