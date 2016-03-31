@@ -112,6 +112,11 @@ import rx.subscriptions.Subscriptions;
       }
     }));
 
+    if (subscriber.isUnsubscribed()) {
+      readerScanning.compareAndSet(true, false);
+      return;
+    }
+
     fingerprintManager.authenticate(new FingerprintManager.CryptoObject(cipher), cancellationSignal,
         0, new FingerprintManager.AuthenticationCallback() {
           @Override public void onAuthenticationError(int errorCode, CharSequence errString) {
