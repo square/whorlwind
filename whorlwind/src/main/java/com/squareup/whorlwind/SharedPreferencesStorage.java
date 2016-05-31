@@ -25,26 +25,38 @@ import java.util.Set;
 import okio.ByteString;
 
 public final class SharedPreferencesStorage implements Storage {
-  private final SharedPreferences prefs;
+  private final Context context;
+  private final String name;
+
+  /** DO NOT use directly! Lazily initialized through {@link #prefs()} accessor method. */
+  private SharedPreferences prefs;
 
   public SharedPreferencesStorage(Context context, String name) {
-    this.prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    this.context = context;
+    this.name = name;
+  }
+
+  private synchronized SharedPreferences prefs() {
+    if (prefs == null) {
+      prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    }
+    return prefs;
   }
 
   @Override public void clear() {
-    prefs.edit().clear().apply();
+    prefs().edit().clear().apply();
   }
 
   @Override public void remove(@NonNull String name) {
-    prefs.edit().remove(name).apply();
+    prefs().edit().remove(name).apply();
   }
 
   @Override public void put(@NonNull String name, @NonNull ByteString value) {
-    prefs.edit().putString(name, value.base64()).apply();
+    prefs().edit().putString(name, value.base64()).apply();
   }
 
   @CheckResult @Override public ByteString get(@NonNull String name) {
-    String value = prefs.getString(name, null);
+    String value = prefs().getString(name, null);
     if (value == null) {
       return null;
     }
@@ -53,6 +65,6 @@ public final class SharedPreferencesStorage implements Storage {
   }
 
   @CheckResult @Override public Set<String> names() {
-    return Collections.unmodifiableSet(new LinkedHashSet<>(prefs.getAll().keySet()));
+    return Collections.unmodifiableSet(new LinkedHashSet<>(prefs().getAll().keySet()));
   }
 }
