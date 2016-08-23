@@ -5,15 +5,16 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import butterknife.Bind;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okio.ByteString;
 import rx.functions.Action1;
 
 public final class ItemView extends LinearLayout {
-  @Bind(R.id.key) TextView keyView;
-  @Bind(R.id.value) TextView valueView;
+  @BindView(R.id.key) TextView keyView;
+  @BindView(R.id.value) TextView valueView;
 
   private Action1<String> readAction;
 
