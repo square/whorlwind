@@ -7,7 +7,7 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 23
+  compileSdkVersion 24
   buildToolsVersion '23.0.2'
 
   defaultConfig {
@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:23.2.0'
+  compile 'com.android.support:support-compat:24.2.0'
   compile 'com.squareup.okio:okio:1.6.0'
   compile 'io.reactivex:rxjava:1.1.1'
 
