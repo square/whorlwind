@@ -47,6 +47,14 @@ public final class ReadResult {
     this.value = value;
   }
 
+  /**
+   * Creates a new instance of ReadResult
+   */
+  public static ReadResult create(@NonNull ReadState readState, int code,
+      @Nullable CharSequence message, @Nullable ByteString value) {
+    return new ReadResult(readState, code, message, value);
+  }
+
   public enum ReadState {
     /**
      * A value was found but it needs authorization to be returned. The fingerprint reader has been
