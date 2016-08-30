@@ -39,7 +39,7 @@ public final class ReadResult {
    */
   @Nullable public final ByteString value;
 
-  ReadResult(@NonNull ReadState readState, int code, @Nullable CharSequence message,
+  private ReadResult(@NonNull ReadState readState, int code, @Nullable CharSequence message,
       @Nullable ByteString value) {
     this.readState = readState;
     this.code = code;
@@ -47,9 +47,6 @@ public final class ReadResult {
     this.value = value;
   }
 
-  /**
-   * Creates a new instance of ReadResult
-   */
   public static ReadResult create(@NonNull ReadState readState, int code,
       @Nullable CharSequence message, @Nullable ByteString value) {
     return new ReadResult(readState, code, message, value);
