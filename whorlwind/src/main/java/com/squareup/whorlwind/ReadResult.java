@@ -49,6 +49,9 @@ public final class ReadResult {
 
   public static ReadResult create(@NonNull ReadState readState, int code,
       @Nullable CharSequence message, @Nullable ByteString value) {
+    if (readState == null) {
+      throw new IllegalArgumentException("ReadState cannot be null.");
+    }
     return new ReadResult(readState, code, message, value);
   }
 
