@@ -39,12 +39,20 @@ public final class ReadResult {
    */
   @Nullable public final ByteString value;
 
-  ReadResult(@NonNull ReadState readState, int code, @Nullable CharSequence message,
+  private ReadResult(@NonNull ReadState readState, int code, @Nullable CharSequence message,
       @Nullable ByteString value) {
     this.readState = readState;
     this.code = code;
     this.message = message;
     this.value = value;
+  }
+
+  public static ReadResult create(@NonNull ReadState readState, int code,
+      @Nullable CharSequence message, @Nullable ByteString value) {
+    if (readState == null) {
+      throw new IllegalArgumentException("ReadState cannot be null.");
+    }
+    return new ReadResult(readState, code, message, value);
   }
 
   public enum ReadState {
