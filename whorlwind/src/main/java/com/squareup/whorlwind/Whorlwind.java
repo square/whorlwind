@@ -22,11 +22,11 @@ import android.os.Build;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
+import io.reactivex.Observable;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import okio.ByteString;
-import rx.Observable;
 
 public abstract class Whorlwind {
   static final String TAG = "Whorlwind";

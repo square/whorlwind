@@ -6,12 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import io.reactivex.functions.Action;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import okio.ByteString;
 import rx.functions.Action1;
 
-final class SampleAdapter extends BaseAdapter implements Action1<List<Pair<String, ByteString>>> {
+final class SampleAdapter extends BaseAdapter implements
+    io.reactivex.functions.Consumer<List<Pair<String, ByteString>>> {
   private final LayoutInflater inflater;
   private final Action1<String> readAction;
 
@@ -24,7 +28,7 @@ final class SampleAdapter extends BaseAdapter implements Action1<List<Pair<Strin
     data = Collections.emptyList();
   }
 
-  @Override public void call(List<Pair<String, ByteString>> data) {
+  @Override public void accept(List<Pair<String, ByteString>> data) {
     this.data = data;
     notifyDataSetChanged();
   }

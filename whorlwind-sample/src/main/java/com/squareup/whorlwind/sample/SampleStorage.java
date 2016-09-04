@@ -4,6 +4,9 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 import com.squareup.whorlwind.Storage;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -11,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import okio.ByteString;
-import rx.Observable;
-import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
 
 /**
  * An in-memory storage implementation that allows observing of values. You should have no reason to
@@ -22,7 +22,7 @@ import rx.subjects.BehaviorSubject;
 final class SampleStorage implements Storage {
   private final Map<String, ByteString> storage = new LinkedHashMap<>();
   private final BehaviorSubject<List<Pair<String, ByteString>>> subject =
-      BehaviorSubject.create(Collections.emptyList() );
+      BehaviorSubject.createDefault(Collections.emptyList());
 
   @Override public void clear() {
     storage.clear();
@@ -52,7 +52,7 @@ final class SampleStorage implements Storage {
   }
 
   private void emit() {
-    Observable.from(storage.entrySet()) //
+    Observable.fromIterable(storage.entrySet()) //
         .map(entry -> Pair.create(entry.getKey(), entry.getValue())) //
         .toSortedList((a, b) -> a.first.compareTo(b.first)) //
         .subscribeOn(Schedulers.io()) //

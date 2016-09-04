@@ -23,12 +23,14 @@ import com.squareup.whorlwind.Whorlwind;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import okio.ByteString;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -46,7 +48,7 @@ public class SampleActivity extends Activity {
   private final SampleStorage storage = new SampleStorage();
 
   private Whorlwind whorlwind;
-  private CompositeSubscription subscriptions;
+  private CompositeDisposable disposables;
   private SampleAdapter adapter;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +83,7 @@ public class SampleActivity extends Activity {
 
   @Override protected void onResume() {
     super.onResume();
-    subscriptions = new CompositeSubscription();
+    disposables = new CompositeDisposable();
 
     if (!whorlwind.canStoreSecurely()) {
       messageView.setText("Cannot store securely. If you have a fingerprint reader, make sure " //
@@ -95,7 +97,7 @@ public class SampleActivity extends Activity {
     messageView.setText(null);
 
     // Write a new value to secure storage.
-    subscriptions.add(RxView.clicks(writeView) //
+    disposables.add(RxJavaInterop.toV2Observable(RxView.clicks(writeView).map(click -> true)) //
         .map(ignored -> //
             Pair.create(keyView.getText().toString(), valueView.getText().toString())) //
         .doOnNext(ignored -> {
@@ -117,7 +119,7 @@ public class SampleActivity extends Activity {
 
     // If a value is not found in storage, the first item emitted will be a READY result with a null
     // value. This shouldn't be possible in this sample.
-    subscriptions.add(readResult.take(1) //
+    disposables.add(readResult.take(1) //
         .filter(result -> result.readState == ReadResult.ReadState.READY) //
         .observeOn(AndroidSchedulers.mainThread()) //
         .subscribe(ignored -> {
@@ -125,7 +127,7 @@ public class SampleActivity extends Activity {
         }));
 
     // Toast the decrypted value. See above for an explanation of the skip(1).
-    subscriptions.add(readResult //
+    disposables.add(readResult //
         .skip(1) //
         .filter(result -> result.readState == ReadResult.ReadState.READY) //
         .map(result -> result.value.utf8()) //
@@ -133,7 +135,7 @@ public class SampleActivity extends Activity {
         .subscribe(value -> Toast.makeText(this, value, Toast.LENGTH_SHORT).show()));
 
     // Update the fingerprint icon.
-    subscriptions.add(readResult //
+    disposables.add(readResult //
         .map(result -> {
           switch (result.readState) {
             case NEEDS_AUTH:
@@ -154,7 +156,7 @@ public class SampleActivity extends Activity {
     // Show error messages. The read result will usually contain help/error messages from Android
     // that should be shown. If you wish to customize these messages, you can check the code in the
     // result.
-    subscriptions.add(readResult //
+    disposables.add(readResult //
         .map(result -> {
           if (result.message != null) {
             return result.message;
@@ -171,7 +173,7 @@ public class SampleActivity extends Activity {
             case UNRECOVERABLE_ERROR:
               return "Something went wrong";
             case READY:
-              return null;
+              return "";
             default:
               throw new IllegalArgumentException("Unknown state: " + result.readState);
           }
@@ -180,7 +182,7 @@ public class SampleActivity extends Activity {
         .subscribe(messageView::setText));
 
     // Automatically clear the error icon after 1.3 seconds if the error is recoverable.
-    subscriptions.add(readResult //
+    disposables.add(readResult //
         .switchMap(result -> Observable.just(result.readState)
             .filter(state -> state == ReadResult.ReadState.AUTHORIZATION_ERROR
                 || state == ReadResult.ReadState.RECOVERABLE_ERROR)
@@ -190,23 +192,24 @@ public class SampleActivity extends Activity {
         .observeOn(AndroidSchedulers.mainThread()) //
         .subscribe(swirlView::setState));
 
-    subscriptions.add(readResult.connect());
+    disposables.add(readResult.connect());
 
     // Only allow writing non-null keys and values.
-    subscriptions.add(
-        Observable.combineLatest(RxTextView.textChanges(keyView), RxTextView.textChanges(valueView),
+    disposables.add(
+        Observable.combineLatest(RxJavaInterop.toV2Observable(RxTextView.textChanges(keyView)),
+            RxJavaInterop.toV2Observable(RxTextView.textChanges(valueView)),
             (key, value) -> !TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) //
-            .subscribe(RxView.enabled(writeView)));
+            .subscribe(writeView::setEnabled));
 
     // Update the list with values from our storage.
-    subscriptions.add(storage.entries() //
+    disposables.add(storage.entries() //
         .observeOn(AndroidSchedulers.mainThread()) //
         .subscribe(adapter));
   }
 
   @Override protected void onPause() {
     super.onPause();
-    subscriptions.unsubscribe();
+    disposables.dispose();
   }
 
   private void hideKeyboard() {

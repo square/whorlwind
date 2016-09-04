@@ -27,6 +27,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import io.reactivex.Observable;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -40,7 +41,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.crypto.Cipher;
 import okio.ByteString;
-import rx.Observable;
 
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;

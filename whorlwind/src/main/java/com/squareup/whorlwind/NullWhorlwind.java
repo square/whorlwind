@@ -15,8 +15,8 @@
  */
 package com.squareup.whorlwind;
 
+import io.reactivex.Observable;
 import okio.ByteString;
-import rx.Observable;
 
 class NullWhorlwind extends Whorlwind {
   @Override public boolean canStoreSecurely() {
