@@ -132,18 +132,19 @@ import okio.ByteString;
 
           @Override
           public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
-            try {
-              Cipher cipher = result.getCryptoObject().getCipher();
-              byte[] decrypted = cipher.doFinal(encrypted.toByteArray());
+            if (!emitter.isCancelled()) {
+              try {
+                Cipher cipher = result.getCryptoObject().getCipher();
+                byte[] decrypted = cipher.doFinal(encrypted.toByteArray());
 
-              emitter.onNext(
-                  ReadResult.create(ReadState.READY, -1, null, ByteString.of(decrypted)));
-              emitter.onComplete();
-            } catch (IllegalBlockSizeException | BadPaddingException e) {
-              Log.i(Whorlwind.TAG, "Failed to decrypt.", e);
-              emitter.onError(e);
+                emitter.onNext(
+                    ReadResult.create(ReadState.READY, -1, null, ByteString.of(decrypted)));
+                emitter.onComplete();
+              } catch (IllegalBlockSizeException | BadPaddingException e) {
+                Log.i(Whorlwind.TAG, "Failed to decrypt.", e);
+                emitter.onError(e);
+              }
             }
-
             readerScanning.set(false);
           }
 
