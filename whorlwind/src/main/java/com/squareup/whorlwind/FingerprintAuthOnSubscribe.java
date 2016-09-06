@@ -119,45 +119,36 @@ import okio.ByteString;
     fingerprintManager.authenticate(new FingerprintManager.CryptoObject(cipher), cancellationSignal,
         0, new FingerprintManager.AuthenticationCallback() {
           @Override public void onAuthenticationError(int errorCode, CharSequence errString) {
-            if (!emitter.isCancelled()) {
-              emitter.onNext(
-                  ReadResult.create(ReadState.UNRECOVERABLE_ERROR, errorCode, errString, null));
-              emitter.onComplete();
-            }
-
+            emitter.onNext(
+                ReadResult.create(ReadState.UNRECOVERABLE_ERROR, errorCode, errString, null));
+            emitter.onComplete();
             readerScanning.set(false);
           }
 
           @Override public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-            if (!emitter.isCancelled()) {
-              emitter.onNext(
-                  ReadResult.create(ReadState.RECOVERABLE_ERROR, helpCode, helpString, null));
-            }
+            emitter.onNext(
+                ReadResult.create(ReadState.RECOVERABLE_ERROR, helpCode, helpString, null));
           }
 
           @Override
           public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
-            if (!emitter.isCancelled()) {
-              try {
-                Cipher cipher = result.getCryptoObject().getCipher();
-                byte[] decrypted = cipher.doFinal(encrypted.toByteArray());
+            try {
+              Cipher cipher = result.getCryptoObject().getCipher();
+              byte[] decrypted = cipher.doFinal(encrypted.toByteArray());
 
-                emitter.onNext(
-                    ReadResult.create(ReadState.READY, -1, null, ByteString.of(decrypted)));
-                emitter.onComplete();
-              } catch (IllegalBlockSizeException | BadPaddingException e) {
-                Log.i(Whorlwind.TAG, "Failed to decrypt.", e);
-                emitter.onError(e);
-              }
+              emitter.onNext(
+                  ReadResult.create(ReadState.READY, -1, null, ByteString.of(decrypted)));
+              emitter.onComplete();
+            } catch (IllegalBlockSizeException | BadPaddingException e) {
+              Log.i(Whorlwind.TAG, "Failed to decrypt.", e);
+              emitter.onError(e);
             }
 
             readerScanning.set(false);
           }
 
           @Override public void onAuthenticationFailed() {
-            if (!emitter.isCancelled()) {
-              emitter.onNext(ReadResult.create(ReadState.AUTHORIZATION_ERROR, -1, null, null));
-            }
+            emitter.onNext(ReadResult.create(ReadState.AUTHORIZATION_ERROR, -1, null, null));
           }
         }, null);
   }
