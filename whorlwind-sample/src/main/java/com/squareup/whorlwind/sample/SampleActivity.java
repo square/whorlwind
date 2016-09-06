@@ -14,15 +14,13 @@ import android.widget.ListView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.mattprecious.swirl.SwirlView;
 import com.squareup.whorlwind.ReadResult;
 import com.squareup.whorlwind.Whorlwind;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -31,11 +29,12 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import okio.ByteString;
-import rx.subscriptions.CompositeSubscription;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SampleActivity extends Activity {
+  private final PublishSubject<String> readSubject = PublishSubject.create();
+  private final SampleStorage storage = new SampleStorage();
   @BindView(R.id.content) View contentView;
   @BindView(R.id.swirl) SwirlView swirlView;
   @BindView(R.id.message) TextSwitcher messageView;
@@ -43,10 +42,6 @@ public class SampleActivity extends Activity {
   @BindView(R.id.key) EditText keyView;
   @BindView(R.id.value) EditText valueView;
   @BindView(R.id.list) ListView listView;
-
-  private final PublishSubject<String> readSubject = PublishSubject.create();
-  private final SampleStorage storage = new SampleStorage();
-
   private Whorlwind whorlwind;
   private CompositeDisposable disposables;
   private SampleAdapter adapter;
