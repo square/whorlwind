@@ -21,15 +21,19 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.util.Log;
+
 import com.squareup.whorlwind.ReadResult.ReadState;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.functions.Cancellable;
+
 import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
 import okio.ByteString;
 
 @TargetApi(Build.VERSION_CODES.M) final class FingerprintAuthOnSubscribe
@@ -111,7 +115,7 @@ import okio.ByteString;
       }
     });
 
-    if (emitter.isCancelled()) {
+    if (emitter.isDisposed()) {
       readerScanning.set(false);
       return;
     }
@@ -132,7 +136,7 @@ import okio.ByteString;
 
           @Override
           public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
-            if (!emitter.isCancelled()) {
+            if (!emitter.isDisposed()) {
               try {
                 Cipher cipher = result.getCryptoObject().getCipher();
                 byte[] decrypted = cipher.doFinal(encrypted.toByteArray());
