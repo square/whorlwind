@@ -90,7 +90,8 @@ final class RealWhorlwind extends Whorlwind {
     }
   }
 
-  @Override public void write(@NonNull String name, @Nullable ByteString value) {
+  @Override public void write(@NonNull String name, @Nullable ByteString value)
+      throws GeneralSecurityException {
     checkCanStoreSecurely();
 
     synchronized (dataLock) {
@@ -101,14 +102,11 @@ final class RealWhorlwind extends Whorlwind {
 
       prepareKeyStore();
 
-      try {
-        Cipher cipher = createCipher();
-        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
+      Cipher cipher = createCipher();
+      cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
+      ByteString encrypted = ByteString.of(cipher.doFinal(value.toByteArray()));
 
-        storage.put(name, ByteString.of(cipher.doFinal(value.toByteArray())));
-      } catch (Exception e) {
-        Log.w(TAG, String.format("Failed to write value for %s", name), e);
-      }
+      storage.put(name, encrypted);
     }
   }
 

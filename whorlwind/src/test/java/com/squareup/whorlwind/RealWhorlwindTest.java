@@ -9,6 +9,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
@@ -95,7 +96,7 @@ public final class RealWhorlwindTest {
     verifyZeroInteractions(storage);
   }
 
-  @Test public void writeThrowsWhenCannotStoreSecurely() {
+  @Test public void writeThrowsWhenCannotStoreSecurely() throws GeneralSecurityException {
     shadowContext.denyPermissions(USE_FINGERPRINT);
 
     try {

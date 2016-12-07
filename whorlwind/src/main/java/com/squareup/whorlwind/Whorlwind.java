@@ -22,6 +22,7 @@ import android.os.Build;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -75,7 +76,7 @@ public abstract class Whorlwind {
   public abstract boolean canStoreSecurely();
 
   /** Writes a value to secure storage. */
-  public abstract void write(String name, ByteString value);
+  public abstract void write(String name, ByteString value) throws GeneralSecurityException;
 
   /**
    * Reads a value from secure storage. If no value is found, a result with a {@code state} of
