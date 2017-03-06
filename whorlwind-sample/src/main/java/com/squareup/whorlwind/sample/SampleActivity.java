@@ -14,14 +14,15 @@ import android.widget.ListView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxTextView;
+
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.mattprecious.swirl.SwirlView;
 import com.squareup.whorlwind.ReadResult;
 import com.squareup.whorlwind.Whorlwind;
-import hu.akarnokd.rxjava.interop.RxJavaInterop;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -92,7 +93,7 @@ public class SampleActivity extends Activity {
     messageView.setText(null);
 
     // Write a new value to secure storage.
-    disposables.add(RxJavaInterop.toV2Observable(RxView.clicks(writeView).map(click -> true)) //
+    disposables.add(RxView.clicks(writeView).map(click -> true) //
         .map(ignored -> //
             Pair.create(keyView.getText().toString(), valueView.getText().toString())) //
         .doOnNext(ignored -> {
@@ -191,8 +192,8 @@ public class SampleActivity extends Activity {
 
     // Only allow writing non-null keys and values.
     disposables.add(
-        Observable.combineLatest(RxJavaInterop.toV2Observable(RxTextView.textChanges(keyView)),
-            RxJavaInterop.toV2Observable(RxTextView.textChanges(valueView)),
+        Observable.combineLatest(RxTextView.textChanges(keyView),
+                RxTextView.textChanges(valueView),
             (key, value) -> !TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) //
             .subscribe(writeView::setEnabled));
 
