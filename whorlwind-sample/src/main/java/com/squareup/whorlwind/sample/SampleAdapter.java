@@ -6,25 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import io.reactivex.functions.Consumer;
 import java.util.Collections;
 import java.util.List;
 import okio.ByteString;
-import rx.functions.Action1;
 
-final class SampleAdapter extends BaseAdapter implements Action1<List<Pair<String, ByteString>>> {
+final class SampleAdapter extends BaseAdapter implements Consumer<List<Pair<String, ByteString>>> {
   private final LayoutInflater inflater;
-  private final Action1<String> readAction;
+  private final Consumer<String> readConsumer;
 
   private List<Pair<String, ByteString>> data;
 
-  public SampleAdapter(Context context, Action1<String> readAction) {
+  public SampleAdapter(Context context, Consumer<String> readConsumer) {
     this.inflater = LayoutInflater.from(context);
-    this.readAction = readAction;
+    this.readConsumer = readConsumer;
 
     data = Collections.emptyList();
   }
 
-  @Override public void call(List<Pair<String, ByteString>> data) {
+  @Override public void accept(List<Pair<String, ByteString>> data) {
     this.data = data;
     notifyDataSetChanged();
   }
@@ -45,7 +45,7 @@ final class SampleAdapter extends BaseAdapter implements Action1<List<Pair<Strin
     ItemView itemView;
     if (convertView == null) {
       itemView = (ItemView) inflater.inflate(R.layout.item, parent, false);
-      itemView.setReadAction(readAction);
+      itemView.setReadConsumer(readConsumer);
     } else {
       itemView = (ItemView) convertView;
     }

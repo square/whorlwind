@@ -21,20 +21,23 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.util.Log;
+
 import com.squareup.whorlwind.ReadResult.ReadState;
+
 import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
 import okio.ByteString;
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.subscriptions.Subscriptions;
 
 @TargetApi(Build.VERSION_CODES.M) final class FingerprintAuthOnSubscribe
-    implements Observable.OnSubscribe<ReadResult> {
+    implements ObservableOnSubscribe<ReadResult> {
   private final FingerprintManager fingerprintManager;
   private final Storage storage;
   private final String name;
@@ -56,7 +59,7 @@ import rx.subscriptions.Subscriptions;
   // Lint doesn't think we're checking permissions before calling FingerprintManager APIs, but we
   // are in checkCanStoreSecurely()
   @SuppressWarnings("ResourceType") @SuppressLint("MissingPermission") //
-  @Override public void call(final Subscriber<? super ReadResult> subscriber) {
+  @Override public void subscribe(final ObservableEmitter<ReadResult> emitter) {
     whorlwind.checkCanStoreSecurely();
 
     final ByteString encrypted;
@@ -88,31 +91,31 @@ import rx.subscriptions.Subscriptions;
     }
 
     if (emitError != null) {
-      subscriber.onError(emitError);
+      emitter.onError(emitError);
       return;
     }
 
-    subscriber.onNext(emitResult);
+    emitter.onNext(emitResult);
 
     if (emitComplete) {
-      subscriber.onCompleted();
+      emitter.onComplete();
       return;
     }
 
     // http://b.android.com/192513
     if (!readerScanning.compareAndSet(false, true)) {
-      subscriber.onError(new IllegalStateException("Already attempting to read another value."));
+      emitter.onError(new IllegalStateException("Already attempting to read another value."));
       return;
     }
 
     final CancellationSignal cancellationSignal = new CancellationSignal();
-    subscriber.add(Subscriptions.create(new Action0() {
-      @Override public void call() {
+    emitter.setCancellable(new Cancellable() {
+      @Override public void cancel() throws Exception {
         cancellationSignal.cancel();
       }
-    }));
+    });
 
-    if (subscriber.isUnsubscribed()) {
+    if (emitter.isDisposed()) {
       readerScanning.set(false);
       return;
     }
@@ -120,45 +123,37 @@ import rx.subscriptions.Subscriptions;
     fingerprintManager.authenticate(new FingerprintManager.CryptoObject(cipher), cancellationSignal,
         0, new FingerprintManager.AuthenticationCallback() {
           @Override public void onAuthenticationError(int errorCode, CharSequence errString) {
-            if (!subscriber.isUnsubscribed()) {
-              subscriber.onNext(
-                  ReadResult.create(ReadState.UNRECOVERABLE_ERROR, errorCode, errString, null));
-              subscriber.onCompleted();
-            }
-
+            emitter.onNext(
+                ReadResult.create(ReadState.UNRECOVERABLE_ERROR, errorCode, errString, null));
+            emitter.onComplete();
             readerScanning.set(false);
           }
 
           @Override public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-            if (!subscriber.isUnsubscribed()) {
-              subscriber.onNext(
-                  ReadResult.create(ReadState.RECOVERABLE_ERROR, helpCode, helpString, null));
-            }
+            emitter.onNext(
+                ReadResult.create(ReadState.RECOVERABLE_ERROR, helpCode, helpString, null));
           }
 
           @Override
           public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
-            if (!subscriber.isUnsubscribed()) {
+            if (!emitter.isDisposed()) {
               try {
                 Cipher cipher = result.getCryptoObject().getCipher();
                 byte[] decrypted = cipher.doFinal(encrypted.toByteArray());
 
-                subscriber.onNext(
+                emitter.onNext(
                     ReadResult.create(ReadState.READY, -1, null, ByteString.of(decrypted)));
-                subscriber.onCompleted();
+                emitter.onComplete();
               } catch (IllegalBlockSizeException | BadPaddingException e) {
                 Log.i(Whorlwind.TAG, "Failed to decrypt.", e);
-                subscriber.onError(e);
+                emitter.onError(e);
               }
             }
-
             readerScanning.set(false);
           }
 
           @Override public void onAuthenticationFailed() {
-            if (!subscriber.isUnsubscribed()) {
-              subscriber.onNext(ReadResult.create(ReadState.AUTHORIZATION_ERROR, -1, null, null));
-            }
+            emitter.onNext(ReadResult.create(ReadState.AUTHORIZATION_ERROR, -1, null, null));
           }
         }, null);
   }

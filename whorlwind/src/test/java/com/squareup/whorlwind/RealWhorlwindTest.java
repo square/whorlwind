@@ -7,7 +7,8 @@ import android.os.CancellationSignal;
 import android.os.Handler;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -22,7 +23,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import okio.ByteString;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,8 +31,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowContextWrapper;
-import rx.Observable;
-import rx.functions.Action1;
 
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static com.google.common.truth.Truth.assertThat;
@@ -132,8 +130,8 @@ public final class RealWhorlwindTest {
     shadowContext.denyPermissions(USE_FINGERPRINT);
 
     try {
-      read.toBlocking().forEach(new Action1<ReadResult>() {
-        @Override public void call(ReadResult ignored) {
+      read.blockingForEach(new Consumer<ReadResult>() {
+        @Override public void accept(ReadResult readResult) throws Exception {
           fail();
         }
       });
@@ -146,9 +144,8 @@ public final class RealWhorlwindTest {
     verifyZeroInteractions(storage);
   }
 
-  @Ignore
-  @Test public void immediateUnsubscribeShouldntCallAuthenticate() throws UnrecoverableKeyException,
-          NoSuchAlgorithmException, KeyStoreException, IOException {
+  @Ignore @Test public void immediateUnsubscribeShouldntCallAuthenticate()
+      throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, IOException {
     Key key = mock(Key.class);
     shadowContext.grantPermissions(USE_FINGERPRINT);
     when(fingerprintManager.isHardwareDetected()).thenReturn(true);
@@ -157,16 +154,12 @@ public final class RealWhorlwindTest {
 
     Observable<ReadResult> read = whorlwind.read("test").take(1);
 
-    ReadResult readResult = read.toBlocking().single();
+    ReadResult readResult = read.blockingSingle();
     assertEquals(ReadResult.ReadState.NEEDS_AUTH, readResult.readState);
 
-    verify(fingerprintManager, never()).authenticate(
-            any(FingerprintManager.CryptoObject.class),
-            any(CancellationSignal.class),
-            anyInt(),
-            any(FingerprintManager.AuthenticationCallback.class),
-            any(Handler.class)
-    );
+    verify(fingerprintManager, never()).authenticate(any(FingerprintManager.CryptoObject.class),
+        any(CancellationSignal.class), anyInt(),
+        any(FingerprintManager.AuthenticationCallback.class), any(Handler.class));
   }
 
   private static class TestStorage implements Storage {
