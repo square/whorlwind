@@ -145,6 +145,9 @@ import okio.ByteString;
                     ReadResult.create(ReadState.READY, -1, null, ByteString.of(decrypted)));
                 emitter.onComplete();
               } catch (IllegalBlockSizeException | BadPaddingException e) {
+                if (e instanceof IllegalBlockSizeException) {
+                  whorlwind.removeKey();
+                }
                 Log.i(Whorlwind.TAG, "Failed to decrypt.", e);
                 emitter.onError(e);
               }
