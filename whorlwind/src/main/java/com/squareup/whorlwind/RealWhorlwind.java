@@ -178,7 +178,7 @@ final class RealWhorlwind extends Whorlwind {
     return (PrivateKey) keyStore.getKey(keyAlias, null);
   }
 
-  public void removeKey() {
+  void removeKey() {
     try {
       keyStore.load(null);
       keyStore.deleteEntry(keyAlias);
