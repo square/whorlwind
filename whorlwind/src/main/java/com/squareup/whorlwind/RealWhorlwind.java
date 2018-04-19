@@ -180,7 +180,6 @@ final class RealWhorlwind extends Whorlwind {
 
   void removeKey() {
     try {
-      keyStore.load(null);
       keyStore.deleteEntry(keyAlias);
     } catch (Exception e) {
       Log.d(TAG, "Remove key failed", e);
