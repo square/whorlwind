@@ -177,4 +177,12 @@ final class RealWhorlwind extends Whorlwind {
   PrivateKey getPrivateKey() throws GeneralSecurityException {
     return (PrivateKey) keyStore.getKey(keyAlias, null);
   }
+
+  void removeKey() {
+    try {
+      keyStore.deleteEntry(keyAlias);
+    } catch (Exception e) {
+      Log.d(TAG, "Remove key failed", e);
+    }
+  }
 }
