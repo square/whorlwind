@@ -44,6 +44,7 @@ import okio.ByteString;
 
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.squareup.whorlwind.Util.sneakyRethrow;
 
 @TargetApi(Build.VERSION_CODES.M) //
 final class RealWhorlwind extends Whorlwind {
@@ -106,8 +107,8 @@ final class RealWhorlwind extends Whorlwind {
         cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
 
         storage.put(name, ByteString.of(cipher.doFinal(value.toByteArray())));
-      } catch (Exception e) {
-        Log.w(TAG, String.format("Failed to write value for %s", name), e);
+      } catch (GeneralSecurityException e) {
+        sneakyRethrow(e);
       }
     }
   }
