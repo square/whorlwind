@@ -93,30 +93,12 @@ public final class RealWhorlwindTest {
     verifyZeroInteractions(storage);
   }
 
-  @Test public void writeThrowsWhenCannotStoreSecurely() {
+  @Test public void writeThrowsOnSubscribeWhenCannotStoreSecurely() {
     shadowContext.denyPermissions(USE_FINGERPRINT);
 
-    try {
-      whorlwind.write("test", ByteString.encodeUtf8("test"));
-      fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage(
-          "Can't store securely. Check canStoreSecurely() before attempting to read/write.");
-    }
-
-    verifyZeroInteractions(storage);
-  }
-
-  @Test public void readThrowsWhenCannotStoreSecurely() {
-    shadowContext.denyPermissions(USE_FINGERPRINT);
-
-    try {
-      whorlwind.read("test");
-      fail();
-    } catch (IllegalStateException expected) {
-      assertThat(expected).hasMessage(
-          "Can't store securely. Check canStoreSecurely() before attempting to read/write.");
-    }
+    Throwable expected = whorlwind.write("test", ByteString.encodeUtf8("test")).blockingGet();
+    assertThat(expected).hasMessage(
+        "Can't store securely. Check canStoreSecurely() before attempting to read/write.");
 
     verifyZeroInteractions(storage);
   }

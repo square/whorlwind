@@ -22,6 +22,7 @@ import android.os.Build;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
@@ -69,13 +70,15 @@ public abstract class Whorlwind {
    * Returns true if the device is currently capable of reading/writing from/to secure storage.
    *
    * <p>
-   * <b>Note:</b> This method must be checked before calling {@link #write(String, ByteString)} or
-   * {@link #read(String)}.
+   * <b>Note:</b> This method must be checked before subscribing to
+   * {@link #write(String, ByteString)} or {@link #read(String)}.
    */
   public abstract boolean canStoreSecurely();
 
-  /** Writes a value to secure storage. */
-  public abstract void write(String name, ByteString value);
+  /**
+   * Writes a value to secure storage. Must check {@link #canStoreSecurely()} before subscribing.
+   */
+  public abstract Completable write(String name, ByteString value);
 
   /**
    * Reads a value from secure storage. If no value is found, a result with a {@code state} of
@@ -83,6 +86,8 @@ public abstract class Whorlwind {
    * with a {@code state} of {@link ReadState#NEEDS_AUTH NEEDS_AUTH} will be emitted and the
    * fingerprint reader will be activated. Future events from the fingerprint reader will be
    * emitted to the stream.
+   *
+   * Must check {@link #canStoreSecurely()} before subscribing.
    */
   public abstract Observable<ReadResult> read(String name);
 }

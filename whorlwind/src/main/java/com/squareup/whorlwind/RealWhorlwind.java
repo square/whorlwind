@@ -27,7 +27,9 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.functions.Action;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -49,13 +51,15 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 final class RealWhorlwind extends Whorlwind {
   private final Context context;
   private final FingerprintManager fingerprintManager;
-  private final Storage storage;
+  @SuppressWarnings("WeakerAccess") // Used in nested class. Removing synthetic accessor.
+  final Storage storage;
   private final String keyAlias;
   private final KeyStore keyStore;
   private final KeyPairGenerator keyGenerator;
   private final KeyFactory keyFactory;
   private final AtomicBoolean readerScanning;
-  private final Object dataLock = new Object();
+  @SuppressWarnings("WeakerAccess") // Used in nested class. Removing synthetic accessor.
+  final Object dataLock = new Object();
 
   RealWhorlwind(Context context, FingerprintManager fingerprintManager, Storage storage,
       String keyAlias, KeyStore keyStore, KeyPairGenerator keyGenerator, KeyFactory keyFactory) {
@@ -90,31 +94,29 @@ final class RealWhorlwind extends Whorlwind {
     }
   }
 
-  @Override public void write(@NonNull String name, @Nullable ByteString value) {
-    checkCanStoreSecurely();
+  @Override public Completable write(@NonNull final String name, @Nullable final ByteString value) {
+    return Completable.fromAction(new Action() {
+      @Override public void run() throws Exception {
+        checkCanStoreSecurely();
 
-    synchronized (dataLock) {
-      if (value == null) {
-        storage.remove(name);
-        return;
+        synchronized (dataLock) {
+          if (value == null) {
+            storage.remove(name);
+            return;
+          }
+
+          prepareKeyStore();
+
+          Cipher cipher = createCipher();
+          cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
+
+          storage.put(name, ByteString.of(cipher.doFinal(value.toByteArray())));
+        }
       }
-
-      prepareKeyStore();
-
-      try {
-        Cipher cipher = createCipher();
-        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
-
-        storage.put(name, ByteString.of(cipher.doFinal(value.toByteArray())));
-      } catch (Exception e) {
-        Log.w(TAG, String.format("Failed to write value for %s", name), e);
-      }
-    }
+    });
   }
 
   @CheckResult @Override public Observable<ReadResult> read(@NonNull String name) {
-    checkCanStoreSecurely();
-
     return Observable.create(new FingerprintAuthOnSubscribe(fingerprintManager, storage, name, //
         readerScanning, dataLock, this));
   }
