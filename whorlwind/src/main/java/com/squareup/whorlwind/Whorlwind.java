@@ -43,6 +43,10 @@ public abstract class Whorlwind {
   private static Whorlwind createRealWhorlwind(Context context, Storage storage, String keyAlias) {
     try {
       FingerprintManager fingerprintManager = context.getSystemService(FingerprintManager.class);
+      if (fingerprintManager == null) {
+        Log.w(TAG, "No fingerprint manager.");
+        return new NullWhorlwind();
+      }
 
       KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
       keyStore.load(null); // Ensure the key store can be loaded before continuing.
@@ -56,7 +60,7 @@ public abstract class Whorlwind {
       return new RealWhorlwind(context, fingerprintManager, storage, keyAlias, keyStore,
           keyGenerator, keyFactory);
     } catch (Exception e) {
-      Log.w("Cannot store securely.", e);
+      Log.w(TAG, "Cannot store securely.", e);
       return new NullWhorlwind();
     }
   }
