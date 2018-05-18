@@ -41,6 +41,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.crypto.Cipher;
 import okio.ByteString;
+import org.xmlpull.v1.XmlPullParserException;
 
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -73,9 +74,17 @@ final class RealWhorlwind extends Whorlwind {
   // Lint is being stupid. The permission is being checked first before accessing fingerprint APIs.
   @SuppressLint("MissingPermission") //
   @CheckResult @Override public boolean canStoreSecurely() {
-    return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED
-        && fingerprintManager.isHardwareDetected()
-        && fingerprintManager.hasEnrolledFingerprints();
+    try {
+      return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED
+          && fingerprintManager.isHardwareDetected()
+          && fingerprintManager.hasEnrolledFingerprints();
+    } catch (IllegalStateException e) {
+      if (e.getCause() instanceof XmlPullParserException) {
+        Log.w(TAG, e.getLocalizedMessage());
+        return false;
+      }
+      throw e;
+    }
   }
 
   private int checkSelfPermission(String permission) {
