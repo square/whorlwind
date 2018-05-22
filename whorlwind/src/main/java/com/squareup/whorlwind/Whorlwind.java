@@ -20,6 +20,7 @@ import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.security.keystore.KeyProperties;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
 import io.reactivex.Observable;
@@ -48,6 +49,8 @@ public abstract class Whorlwind {
         return new NullWhorlwind();
       }
 
+      if (!isHardwareDetected(fingerprintManager)) return new NullWhorlwind();
+
       KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
       keyStore.load(null); // Ensure the key store can be loaded before continuing.
 
@@ -62,6 +65,16 @@ public abstract class Whorlwind {
     } catch (Exception e) {
       Log.w(TAG, "Cannot store securely.", e);
       return new NullWhorlwind();
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.M)
+  static boolean isHardwareDetected(FingerprintManager fingerprintManager) {
+    try {
+      return fingerprintManager.isHardwareDetected();
+    } catch (SecurityException e) {
+      Log.w(TAG, "Failed detecting hardware", e);
+      return false;
     }
   }
 
