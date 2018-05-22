@@ -75,7 +75,7 @@ final class RealWhorlwind extends Whorlwind {
   @CheckResult @Override public boolean canStoreSecurely() {
     return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED
         && isHardwareDetected(fingerprintManager)
-        && fingerprintManager.hasEnrolledFingerprints();
+        && hasEnrolledFingerprints(fingerprintManager);
   }
 
   private int checkSelfPermission(String permission) {

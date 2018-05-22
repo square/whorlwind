@@ -78,6 +78,17 @@ public abstract class Whorlwind {
     }
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
+  static boolean hasEnrolledFingerprints(FingerprintManager fingerprintManager) {
+    try {
+      return fingerprintManager.hasEnrolledFingerprints();
+    } catch (IllegalStateException e) {
+      // see https://github.com/square/whorlwind/issues/36
+      Log.w(TAG, "Cannot know if device has enrolled fingerprints", e);
+      return false;
+    }
+  }
+
   Whorlwind() {
     // Prevent 3rd-party implementations.
   }
