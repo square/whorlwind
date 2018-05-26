@@ -164,7 +164,7 @@ final class RealWhorlwind extends Whorlwind {
         + KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1);
   }
 
-  private PublicKey getPublicKey() throws GeneralSecurityException {
+  @SuppressWarnings("WeakerAccess") PublicKey getPublicKey() throws GeneralSecurityException {
     PublicKey publicKey = keyStore.getCertificate(keyAlias).getPublicKey();
 
     // In contradiction to the documentation, the public key returned from the key store is only
