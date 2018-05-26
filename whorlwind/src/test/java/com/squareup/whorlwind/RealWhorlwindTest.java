@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.internal.ShadowExtractor;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowContextWrapper;
 
 import static android.Manifest.permission.USE_FINGERPRINT;
@@ -51,8 +51,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("ResourceType") //
 public final class RealWhorlwindTest {
   private final ContextWrapper context = new ContextWrapper(RuntimeEnvironment.application);
-  private final ShadowContextWrapper shadowContext =
-      ((ShadowContextWrapper) ShadowExtractor.extract(context));
+  private final ShadowContextWrapper shadowContext = Shadow.extract(context);
   private final FingerprintManager fingerprintManager = mock(FingerprintManager.class);
   private final Storage storage = spy(new TestStorage());
   private final KeyStore keyStore = mock(KeyStore.class);
