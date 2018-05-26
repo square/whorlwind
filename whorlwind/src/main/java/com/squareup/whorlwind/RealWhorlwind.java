@@ -15,7 +15,6 @@
  */
 package com.squareup.whorlwind;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
@@ -74,8 +73,6 @@ final class RealWhorlwind extends Whorlwind {
     readerScanning = new AtomicBoolean();
   }
 
-  // Lint is being stupid. The permission is being checked first before accessing fingerprint APIs.
-  @SuppressLint("MissingPermission") //
   @CheckResult @Override public boolean canStoreSecurely() {
     return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED
         && isHardwareDetected(fingerprintManager)
