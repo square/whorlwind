@@ -73,7 +73,8 @@ public class SampleActivity extends Activity {
     if (whorlwind.canStoreSecurely()) {
       Observable.just("Hello world!")
           .observeOn(Schedulers.io())
-          .subscribe(value -> whorlwind.write("sample", ByteString.encodeUtf8(value)));
+          .flatMapCompletable(value -> whorlwind.write("sample", ByteString.encodeUtf8(value)))
+          .subscribe();
     }
   }
 
@@ -105,7 +106,8 @@ public class SampleActivity extends Activity {
           hideKeyboard();
         }) //
         .observeOn(Schedulers.io()) //
-        .subscribe(data -> whorlwind.write(data.first, ByteString.encodeUtf8(data.second))));
+        .flatMapCompletable(data -> whorlwind.write(data.first, ByteString.encodeUtf8(data.second)))
+        .subscribe());
 
     // Read a value from secure storage for a provided key.
     ConnectableObservable<ReadResult> readResult = readSubject //
