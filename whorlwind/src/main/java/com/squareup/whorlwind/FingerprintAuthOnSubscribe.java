@@ -21,19 +21,15 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.util.Log;
-
 import com.squareup.whorlwind.ReadResult.ReadState;
-
-import java.security.GeneralSecurityException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Cancellable;
+import java.security.GeneralSecurityException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import okio.ByteString;
 
 @TargetApi(Build.VERSION_CODES.M) final class FingerprintAuthOnSubscribe
@@ -41,9 +37,9 @@ import okio.ByteString;
   private final FingerprintManager fingerprintManager;
   private final Storage storage;
   private final String name;
-  private final AtomicBoolean readerScanning;
+  @SuppressWarnings("WeakerAccess") final AtomicBoolean readerScanning;
   private final Object dataLock;
-  private final RealWhorlwind whorlwind;
+  final RealWhorlwind whorlwind;
 
   public FingerprintAuthOnSubscribe(FingerprintManager fingerprintManager, Storage storage,
       String name, AtomicBoolean readerScanning, Object dataLock, RealWhorlwind whorlwind) {
@@ -110,7 +106,7 @@ import okio.ByteString;
 
     final CancellationSignal cancellationSignal = new CancellationSignal();
     emitter.setCancellable(new Cancellable() {
-      @Override public void cancel() throws Exception {
+      @Override public void cancel() {
         cancellationSignal.cancel();
       }
     });
