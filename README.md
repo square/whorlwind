@@ -36,7 +36,8 @@ not be called on the main thread.
 if (whorlwind.canStoreSecurely()) {
   Observable.just("value")
       .observeOn(Schedulers.io())
-      .subscribe(value -> whorlwind.write("key", ByteString.encodeUtf8(value)));
+      .flatMapCompletable(value -> whorlwind.write("key", ByteString.encodeUtf8(value)))
+      .subscribe();
 }
 ```
 
