@@ -22,7 +22,6 @@ import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
-import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -73,7 +72,7 @@ final class RealWhorlwind extends Whorlwind {
     readerScanning = new AtomicBoolean();
   }
 
-  @CheckResult @Override public boolean canStoreSecurely() {
+  @Override public boolean canStoreSecurely() {
     return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED
         && isHardwareDetected(fingerprintManager)
         && hasEnrolledFingerprints(fingerprintManager);
@@ -113,7 +112,7 @@ final class RealWhorlwind extends Whorlwind {
     });
   }
 
-  @CheckResult @Override public Observable<ReadResult> read(@NonNull String name) {
+  @Override public Observable<ReadResult> read(@NonNull String name) {
     return Observable.create(new FingerprintAuthOnSubscribe(fingerprintManager, storage, name, //
         readerScanning, dataLock, this));
   }
