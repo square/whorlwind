@@ -20,6 +20,7 @@ import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.security.keystore.KeyProperties;
+import android.support.annotation.CheckResult;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
@@ -101,11 +102,13 @@ public abstract class Whorlwind {
    * <b>Note:</b> This method must be checked before subscribing to
    * {@link #write(String, ByteString)} or {@link #read(String)}.
    */
+  @CheckResult
   public abstract boolean canStoreSecurely();
 
   /**
    * Writes a value to secure storage. Must check {@link #canStoreSecurely()} before subscribing.
    */
+  @CheckResult
   public abstract Completable write(String name, ByteString value);
 
   /**
@@ -117,5 +120,6 @@ public abstract class Whorlwind {
    *
    * Must check {@link #canStoreSecurely()} before subscribing.
    */
+  @CheckResult
   public abstract Observable<ReadResult> read(String name);
 }
