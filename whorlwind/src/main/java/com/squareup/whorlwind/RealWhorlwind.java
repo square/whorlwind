@@ -15,7 +15,6 @@
  */
 package com.squareup.whorlwind;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
@@ -24,6 +23,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -45,7 +45,7 @@ import okio.ByteString;
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-@TargetApi(Build.VERSION_CODES.M) //
+@RequiresApi(Build.VERSION_CODES.M) //
 final class RealWhorlwind extends Whorlwind {
   private final Context context;
   private final FingerprintManager fingerprintManager;
