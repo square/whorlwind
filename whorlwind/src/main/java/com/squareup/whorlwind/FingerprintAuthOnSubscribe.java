@@ -15,7 +15,6 @@
  */
 package com.squareup.whorlwind;
 
-import android.annotation.SuppressLint;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
@@ -41,7 +40,7 @@ final class FingerprintAuthOnSubscribe implements ObservableOnSubscribe<ReadResu
   private final Object dataLock;
   final RealWhorlwind whorlwind;
 
-  public FingerprintAuthOnSubscribe(FingerprintManager fingerprintManager, Storage storage,
+  FingerprintAuthOnSubscribe(FingerprintManager fingerprintManager, Storage storage,
       String name, AtomicBoolean readerScanning, Object dataLock, RealWhorlwind whorlwind) {
     this.fingerprintManager = fingerprintManager;
     this.storage = storage;
@@ -52,9 +51,6 @@ final class FingerprintAuthOnSubscribe implements ObservableOnSubscribe<ReadResu
     this.whorlwind = whorlwind;
   }
 
-  // Lint doesn't think we're checking permissions before calling FingerprintManager APIs, but we
-  // are in checkCanStoreSecurely()
-  @SuppressWarnings("ResourceType") @SuppressLint("MissingPermission") //
   @Override public void subscribe(final ObservableEmitter<ReadResult> emitter) {
     whorlwind.checkCanStoreSecurely();
 
