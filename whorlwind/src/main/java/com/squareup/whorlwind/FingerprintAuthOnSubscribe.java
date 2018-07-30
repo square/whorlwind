@@ -16,10 +16,10 @@
 package com.squareup.whorlwind;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
 import io.reactivex.ObservableEmitter;
@@ -32,8 +32,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import okio.ByteString;
 
-@TargetApi(Build.VERSION_CODES.M) final class FingerprintAuthOnSubscribe
-    implements ObservableOnSubscribe<ReadResult> {
+@RequiresApi(Build.VERSION_CODES.M) //
+final class FingerprintAuthOnSubscribe implements ObservableOnSubscribe<ReadResult> {
   private final FingerprintManager fingerprintManager;
   private final Storage storage;
   private final String name;

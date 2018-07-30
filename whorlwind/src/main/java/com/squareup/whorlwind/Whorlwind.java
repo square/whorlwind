@@ -15,7 +15,6 @@
  */
 package com.squareup.whorlwind;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
@@ -42,7 +41,7 @@ public abstract class Whorlwind {
     return createRealWhorlwind(context, storage, keyAlias);
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
+  @RequiresApi(Build.VERSION_CODES.M)
   private static Whorlwind createRealWhorlwind(Context context, Storage storage, String keyAlias) {
     try {
       FingerprintManager fingerprintManager = context.getSystemService(FingerprintManager.class);
