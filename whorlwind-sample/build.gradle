@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
 
   defaultConfig {
     minSdkVersion 15
-    targetSdkVersion 27
+    targetSdkVersion 28
 
     versionCode 1
     versionName VERSION_NAME
@@ -30,4 +30,15 @@ dependencies {
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
   implementation 'com.jakewharton.rxbinding2:rxbinding:2.1.1'
   implementation 'com.mattprecious.swirl:swirl:1.1.0'
+}
+
+// Force all of the primary support libraries to use the same version.
+configurations.all {
+  resolutionStrategy {
+    eachDependency { details ->
+      if (details.requested.group == 'com.android.support') {
+        details.useVersion '28.0.0'
+      }
+    }
+  }
 }
