@@ -42,10 +42,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.crypto.Cipher;
 import okio.ByteString;
 
+import static android.Manifest.permission.USE_BIOMETRIC;
 import static android.Manifest.permission.USE_FINGERPRINT;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-@RequiresApi(Build.VERSION_CODES.M) //
+@RequiresApi(Build.VERSION_CODES.M)
 final class RealWhorlwind extends Whorlwind {
   private final Context context;
   private final FingerprintManager fingerprintManager;
@@ -73,9 +74,17 @@ final class RealWhorlwind extends Whorlwind {
   }
 
   @Override public boolean canStoreSecurely() {
-    return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED
+    return hasPermission()
         && isHardwareDetected(fingerprintManager)
         && hasEnrolledFingerprints(fingerprintManager);
+  }
+
+  private boolean hasPermission() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      return checkSelfPermission(USE_FINGERPRINT) == PERMISSION_GRANTED;
+    } else {
+      return checkSelfPermission(USE_BIOMETRIC) == PERMISSION_GRANTED;
+    }
   }
 
   private int checkSelfPermission(String permission) {
