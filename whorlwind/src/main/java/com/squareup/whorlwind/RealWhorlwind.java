@@ -152,7 +152,7 @@ final class RealWhorlwind extends Whorlwind {
           KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT) //
           .setBlockModes(KeyProperties.BLOCK_MODE_ECB) //
           .setUserAuthenticationRequired(true) //
-          .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1) //
+          .setEncryptionPaddings(getEncryptionPadding()) //
           .build());
 
       keyGenerator.generateKeyPair();
@@ -166,7 +166,7 @@ final class RealWhorlwind extends Whorlwind {
         + "/"
         + KeyProperties.BLOCK_MODE_ECB
         + "/"
-        + KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1);
+        + getEncryptionPadding());
   }
 
   @SuppressWarnings("WeakerAccess") PublicKey getPublicKey() throws GeneralSecurityException {
@@ -190,6 +190,18 @@ final class RealWhorlwind extends Whorlwind {
       keyStore.deleteEntry(keyAlias);
     } catch (Exception e) {
       Log.d(TAG, "Remove key failed", e);
+    }
+  }
+
+  /**
+   * Get the more secure encyrption padding type
+   * OAEP if it is supported, with a fallback to RSA PKCS1
+   */
+  private static String getEncryptionPadding() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1;
+    } else {
+      return KeyProperties.ENCRYPTION_PADDING_RSA_OAEP;
     }
   }
 }
