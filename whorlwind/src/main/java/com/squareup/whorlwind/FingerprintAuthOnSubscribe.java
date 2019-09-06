@@ -18,7 +18,7 @@ package com.squareup.whorlwind;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 import com.squareup.whorlwind.ReadResult.ReadState;
 import io.reactivex.ObservableEmitter;

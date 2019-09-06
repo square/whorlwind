@@ -17,8 +17,8 @@ package com.squareup.whorlwind;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;

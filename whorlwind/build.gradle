@@ -20,14 +20,14 @@ android {
 
   // TODO replace with https://issuetracker.google.com/issues/72050365 once released.
   libraryVariants.all {
-    it.generateBuildConfig.enabled = false
+    it.generateBuildConfigProvider.configure { it.enabled = false }
   }
 }
 
 dependencies {
-  implementation 'com.android.support:support-compat:28.0.0'
+  implementation 'androidx.core:core:1.0.2'
   api 'com.squareup.okio:okio:1.14.1'
-  api 'io.reactivex.rxjava2:rxjava:2.1.14'
+  api 'io.reactivex.rxjava2:rxjava:2.2.12'
 
   // Test dependencies.
   testImplementation 'junit:junit:4.12'
