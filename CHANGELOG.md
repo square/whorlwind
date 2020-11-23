@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 2.1.0 *(2020-11-23)*
+----------------------------
+
+* AndroidX
+* Add `USE_BIOMETRIC` permission for API 28
+
 Version 2.0.0 *(2018-07-19)*
 ----------------------------
 

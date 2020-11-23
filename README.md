@@ -96,7 +96,7 @@ Download
 Gradle:
 
 ```groovy
-implementation 'com.squareup.whorlwind:whorlwind:2.0.0'
+implementation 'com.squareup.whorlwind:whorlwind:2.1.0'
 ```
 
 
