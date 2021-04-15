@@ -4,6 +4,12 @@ Whorlwind
 A reactive wrapper around Android's fingerprint API that handles encrypting/decrypting sensitive
 data using a fingerprint.
 
+**DEPRECATED:** Google has released the [AndroidX Biometric Library][biometric] which supports more
+forms of authentication than fingerprint and should be relied on going forward. See
+[the announcement][announcement] for more information.
+
+[biometric]: https://developer.android.com/jetpack/androidx/releases/biometric
+[announcement]: https://android-developers.googleblog.com/2019/10/one-biometric-api-over-all-android.html
 
 Usage
 -----
